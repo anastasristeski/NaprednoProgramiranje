@@ -1,10 +1,11 @@
-package LocalDateTime;
+package LABS.LAB1.LAB1_4;
+
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 
 /**
@@ -26,16 +27,15 @@ public class LocalDateTimeTest {
         /**
          * Create a {@link LocalDateTime} of 2015-06-20 23:07:30 by using {@link LocalDateTime#of}
          */
-        return LocalDateTime.of(2015,6,20,23,7,30);
+        return LocalDateTime.of(2015,6,20,23, 7,30);
     }
 
     static LocalDateTime localDateTimeParse() {
         /**
          * Create a {@link LocalDateTime} of 2015-06-20 23:07:30 by using {@link LocalDateTime#parse}
          */
-        LocalDate ld = LocalDate.parse("2015-06-20");
-        LocalTime lt = LocalTime.parse("23:07:30");
-        return LocalDateTime.of(ld,lt);
+        return LocalDateTime.parse("2015-06-20T23:07:30");
+
     }
 
     static LocalDateTime localTimeWith() {
@@ -45,6 +45,7 @@ public class LocalDateTimeTest {
          * Create a {@link LocalDateTime} from {@link ldt}
          * with first day of the next month and also truncated to hours.
          */
+
         return ldt.with(TemporalAdjusters.firstDayOfNextMonth()).truncatedTo(ChronoUnit.HOURS);
     }
 
@@ -65,9 +66,8 @@ public class LocalDateTimeTest {
          * Format {@link ldt} to a {@link String} as "2015_06_18_23_07_30"
          * by using {@link LocalDateTime#format} and {@link DateTimeFormatter#ofPattern}
          */
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");
+        return ldt.format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss"));
 
-        return ldt.format(formatter);
     }
 
     static String toLocalDateAndTime() {
@@ -77,8 +77,8 @@ public class LocalDateTimeTest {
          * Create a {@link LocalDate} and a {@link LocalTime} from {@link ldt}
          * by using {@link LocalDateTime#toLocalDate} and {@link LocalDateTime#toLocalTime}
          */
-        LocalDate localDate = null;
-        LocalTime localTime = null;
+        LocalDate localDate = ldt.toLocalDate();
+        LocalTime localTime = ldt.toLocalTime();
         return localDate.toString() + localTime.toString();
     }
 
@@ -90,8 +90,8 @@ public class LocalDateTimeTest {
          * Create two equal {@link LocalDateTime} from {@link ld} and {@link lt}
          * by using {@link LocalDate#atTime} and {@link LocalTime#atDate}
          */
-        LocalDateTime localDateTime1 = null;
-        LocalDateTime localDateTime2 = null;
+        LocalDateTime localDateTime1 = ld.atTime(lt);
+        LocalDateTime localDateTime2 = lt.atDate(ld);
         return localDateTime1.toString() + " " + localDateTime2.toString();
     }
 
