@@ -22,17 +22,11 @@ class Account{
         return newId;
     }
 
-    public void setBalance(double balance) {
-        this.balance =  balance;
-    }
     public void transferMoney(double amount){
         this.balance -= amount;
     }
     public void acceptTranfer(double amount){
         this.balance += amount;
-    }
-    public String getName() {
-        return name;
     }
 
     public long getId() {
@@ -62,10 +56,10 @@ class Account{
     }
 }
 abstract class Transaction{
-    private long fromId;
-    private long toId;
-    private String description;
-    private double amount;
+    private final long fromId;
+    private final long toId;
+    private final String description;
+    private final double amount;
 
     public Transaction(long fromId, long toId, String description, double amount) {
         this.fromId = fromId;
@@ -106,7 +100,7 @@ abstract class Transaction{
     }
 }
 class FlatAmountProvisionTransaction extends Transaction{
-    private double flatProvision;
+    private final double flatProvision;
     public FlatAmountProvisionTransaction(long fromId, long toId, double amount, double flatProvision) {
         super(fromId, toId, "FlatAmount", amount);
         this.flatProvision=flatProvision;
@@ -140,15 +134,12 @@ class FlatAmountProvisionTransaction extends Transaction{
     }
 }
 class FlatPercentProvisionTransaction extends Transaction{
-    private int centsPerDollar;
+    private final int centsPerDollar;
     public FlatPercentProvisionTransaction(long fromId, long toId, double amount, int centsPerDollar) {
         super(fromId, toId, "FlatPercent", amount);
         this.centsPerDollar=centsPerDollar;
     }
 
-    public int getCentsPerDollar() {
-        return centsPerDollar;
-    }
 
     @Override
     double getProvision() {
@@ -174,7 +165,7 @@ class FlatPercentProvisionTransaction extends Transaction{
     }
 }
 class Bank{
-    private String name;
+    private final String name;
     Account [] accounts;
     private  double totalTransfers;
     private  double totalProvision;
