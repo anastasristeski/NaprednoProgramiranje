@@ -2,97 +2,100 @@ package LABS.LAB3.ResizableArray;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
-
 class ResizableArray<T>{
     private T [] elements;
-    private int size;
-    public ResizableArray(){
-        elements = (T[]) new Object[10];
-        size = 0;
+    @SuppressWarnings("unchecked")
+    ResizableArray(){
+        elements = (T[]) new Object[0];
     }
     public void addElement(T element){
-        if(size==elements.length){
-            elements = Arrays.copyOf(elements,elements.length*2);
-        }
-        elements[size++]=element;
+        T [] newElements = Arrays.copyOf(elements,elements.length+1);
+        newElements[newElements.length-1]=element;
+        elements = newElements;
     }
+    @SuppressWarnings("unchecked")
     public boolean removeElement(T element){
-        for(int i = 0;i<size;i++){
-            if(elements[i].equals(element)){
-                for(int j=i;j<size-1;j++){
-                    elements[j]=elements[j+1];
-                }
-                elements[size--] = null;
+        int index = findElementIndex(element);
+        if(index == -1)
+            return false;
+        elements[index] = elements[count()-1];
+        T [] newElements = (T[]) new Object[elements.length-1];
+        newElements = Arrays.copyOf(elements,elements.length-1);
+        elements = newElements;
+        return true;
+    }
+    public int count(){
+        return elements.length;
+    }
+    public int findElementIndex(T element){
+        for(int i=0;i<elements.length;i++){
+            if(element.equals(elements[i]))
+                return i;
+        }
+        return -1;
+    }
+    public boolean contains(T element){
+        for(T e : elements){
+            if (element.equals(e)){
                 return true;
             }
         }
         return false;
     }
-    public Object[] toArray(){
+    public Object [] toArray(){
         return Arrays.stream(elements).toArray();
     }
     public boolean isEmpty(){
-        return size==0;
+        return elements.length==0;
     }
-    public int count(){
-        return size;
-    }
-    public T elementAt(int idx)throws ArrayIndexOutOfBoundsException{
-        if(idx<0||idx>size)
-            throw new ArrayIndexOutOfBoundsException();
-        return elements[idx];
-    }
-    public static <T> void copyAll(ResizableArray<? super T> dest, ResizableArray<? extends T> src){
-        for(int i=0;i<src.count();i++){
-            dest.addElement(src.elementAt(i));
+    public T elementAt(int index){
+        if(index<0||index >=elements.length){
+            throw new ArrayIndexOutOfBoundsException(index);
         }
+        return elements[index];
     }
-
-    public boolean contains(T element){
-        for(T el : elements)
-            if(el.equals(element))
-                return true;
-        return false;
+    @SuppressWarnings("unchecked")
+    public static <T> void copyAll(ResizableArray<? super T> dest, ResizableArray<? extends T> src){
+        T [] array = (T[]) Arrays.copyOf(src.toArray(),src.count());
+        for(T element : array){
+            dest.addElement(element);
+        }
     }
 }
 class IntegerArray extends ResizableArray<Integer>{
-    public IntegerArray(){
-        super();
-    }
     public double sum(){
-        double sum=0.0;
+        double s =0.0;
         for(int i=0;i<count();i++){
-            sum+=elementAt(i);
+            s+=elementAt(i);
         }
-        return sum;
+        return s;
     }
     public double mean(){
         return sum()/count();
     }
     public int countNonZero(){
-        int counter =0;
+        int counter = 0;
         for(int i=0;i<count();i++){
-            if(elementAt(i).equals(0))
+            if(elementAt(i)!=0)
                 counter++;
         }
         return counter;
     }
     public IntegerArray distinct(){
-        IntegerArray ia = new IntegerArray();
+        IntegerArray array = new IntegerArray();
         for(int i=0;i<count();i++){
-            if(ia.contains(this.elementAt(i)))
-                continue;
-            ia.addElement(this.elementAt(i));
+            if(!array.contains(elementAt(i))){
+                array.addElement(elementAt(i));
+            }
         }
-        return ia;
+        return array;
     }
     public IntegerArray increment(int offset){
-        IntegerArray ia = new IntegerArray();
+        IntegerArray arr = new IntegerArray();
         for(int i=0;i<count();i++){
-            ia.addElement(this.elementAt(i)+offset);
+            arr.addElement(elementAt(i)+offset);
         }
-        return ia;
+        return arr;
     }
 }
 public class ResizableArrayTest {
