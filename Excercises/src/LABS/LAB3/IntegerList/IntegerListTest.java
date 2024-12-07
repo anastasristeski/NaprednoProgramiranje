@@ -1,8 +1,6 @@
 package LABS.LAB3.IntegerList;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class IntegerList{
@@ -62,6 +60,7 @@ class IntegerList{
        list = (ArrayList<Integer>) list.stream()
                .distinct()
                .collect(Collectors.toList());
+
     }
     public int sumFirst(int k){
         return list.stream()
