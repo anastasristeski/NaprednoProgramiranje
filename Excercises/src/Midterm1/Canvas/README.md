@@ -1,15 +1,13 @@
-Да се дефинира класа ShapesApplication во која се чуваат податоци за повеќе прозорци на кои се исцртуваат геометриски слики во форма на квадрат.
+# ShapesApplication
 
+The `ShapesApplication` class is designed to manage and process data for multiple canvases that display geometric shapes in the form of squares.
 
-За класата да се дефинира:
+## Class Definition
 
+### Constructor
+- **`ShapesApplication()`**  
+  Initializes an instance of the `ShapesApplication` class.
 
-ShapesApplication() - конструктор
-int readCanvases (InputStream inputStream) - 
-метод којшто од влезен поток на податоци ќе прочита информации за повеќе прозорци на кои се исцртуваат квадрати.
-Во секој ред од потокот е дадена информација за еден прозорец во формат: canvas_id size_1 size_2 size_3 …. size_n, каде што canvas_id е ИД-то на прозорецот, 
-а после него следуваат големините на страните на квадратите што се исцртуваат во прозорецот. 
-Методот треба да врати цел број што означува колку квадрати за сите прозорци се успешно прочитани.
-
-
-void printLargestCanvasTo (OutputStream outputStream) - метод којшто на излезен поток ќе го испечати прозорецот чии квадрати имаат најголем периметар. Печатењето да се изврши во форматот canvas_id squares_count total_squares_perimeter.
+### Methods
+#### 1. `int readCanvases(InputStream inputStream)`
+Reads data about multiple canvases from an input stream. Each line of the input stream represents information for one canvas in the following format:  
