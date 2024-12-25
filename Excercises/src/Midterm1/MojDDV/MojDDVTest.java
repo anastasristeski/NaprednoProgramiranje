@@ -4,7 +4,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.DoubleSummaryStatistics;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+
 class AmountNotAllowedException extends Exception{
     public AmountNotAllowedException(int suma) {
         super(String.format("Receipt with amount %d is not allowed to be scanned",suma));
@@ -79,7 +82,7 @@ class Smetka{
 
     @Override
     public String toString() {
-        return String.format("%s %d %.2f",id,getAmount(),taxReturns());
+        return String.format("%10s\t%10d\t%10.5f",id,getAmount(),taxReturns());
     }
 }
 class MojDDV{
@@ -111,6 +114,13 @@ class MojDDV{
         }
         pw.flush();
     }
+    public void printStatistics(OutputStream outputStream){
+        DoubleSummaryStatistics stats = smetki.stream().mapToDouble(Smetka::taxReturns).summaryStatistics();
+        String s = String.format("min:\t%.3f\nmax:\t%.3f\nsum:\t%.3f\ncount:\t%d\navg:\t%.3f",stats.getMin(),stats.getMax(),stats.getSum(),stats.getCount(),stats.getAverage());
+        PrintWriter pw = new PrintWriter(outputStream);
+        pw.println(s);
+        pw.flush();
+    }
 }
 public class MojDDVTest {
 
@@ -125,6 +135,8 @@ public class MojDDVTest {
 
         System.out.println("===PRINTING TAX RETURNS RECORDS TO OUTPUT STREAM ===");
         mojDDV.printTaxReturns(System.out);
+        System.out.println("===PRINTING SUMMARY STATISTICS FOR TAX RETURNS TO OUTPUT STREAM===");
+        mojDDV.printStatistics(System.out);
 
     }
 }
