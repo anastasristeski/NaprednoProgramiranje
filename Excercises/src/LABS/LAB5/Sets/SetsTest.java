@@ -1,5 +1,7 @@
 package LABS.LAB5.Sets;
 
+
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -53,10 +55,10 @@ class Student{
     }
 }
 class Faculty{
-    Set<Student> students;
+
     Map<String,Student> studentsMap;
     public Faculty() {
-        this.students = new HashSet<>();
+
         this.studentsMap = new HashMap<>();
     }
     public void addStudent(String id,List<Integer>grades) throws DuplicateStudentException {
@@ -64,7 +66,6 @@ class Faculty{
             throw new DuplicateStudentException(id);
         else {
             Student student = new Student(id,grades);
-            students.add(student);
             studentsMap.put(student.getId(), student);
         }
     }
@@ -81,9 +82,10 @@ class Faculty{
     }
     Set<Student> getStudentsSortedByCoursesPassed(){
         Comparator<Student> comparatorByCoursesPassed = Comparator
-                .comparing(Student::getPassedExams,Comparator.reverseOrder())
-                .thenComparing(Student::averageGrade,Comparator.reverseOrder())
-                .thenComparing(Student::getId,Comparator.reverseOrder());
+                .comparing(Student::getPassedExams)
+                .thenComparing(Student::averageGrade)
+                .thenComparing(Student::getId)
+                .reversed();
         return studentsMap.values().stream()
                 .sorted(comparatorByCoursesPassed)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
