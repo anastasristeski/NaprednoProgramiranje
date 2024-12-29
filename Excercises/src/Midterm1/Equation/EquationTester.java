@@ -24,6 +24,7 @@ class Line {
         );
     }
 
+
     public double calculateLine() {
         return coeficient * x + intercept;
     }
