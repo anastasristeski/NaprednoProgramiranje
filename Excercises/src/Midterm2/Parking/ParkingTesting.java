@@ -1,12 +1,14 @@
 package Midterm2.Parking;
-import com.sun.source.tree.Tree;
-
-import java.sql.SQLOutput;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+class DateUtil {
+    public static long durationBetween(LocalDateTime start, LocalDateTime end) {
+        return Duration.between(start, end).toMinutes();
+    }
+}
 class Car implements Comparable<Car>{
     String registration;
     String spot;
@@ -31,11 +33,6 @@ class Car implements Comparable<Car>{
     }
 
     @Override
-    public String toString() {
-        return String.format("Registration number: %s Spot: %s Start timestamp: %s",registration,spot,timestamp.toString());
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -49,10 +46,15 @@ class Car implements Comparable<Car>{
     }
 
     @Override
-    public int compareTo(Car o) {
-         return o.timestamp.compareTo(this.timestamp);
+    public String toString() {
+        return String.format("Registration number: %s Spot: %s Start timestamp: %s", registration,spot,timestamp.toString());
+
     }
-    //Registration number: NE0002AA Spot: A4 Start timestamp: 2024-01-15T21:11:32
+
+    @Override
+    public int compareTo(Car o) {
+        return o.timestamp.compareTo(this.timestamp);
+    }
 }
 class ParkingRecord{
     String registration;
@@ -66,7 +68,7 @@ class ParkingRecord{
         this.spot = spot;
         this.enter = enter;
         this.exit = exit;
-        duration = DateUtil.durationBetween(enter,exit);
+        this.duration = DateUtil.durationBetween(enter,exit);
     }
 
     public long getDuration() {
@@ -86,22 +88,28 @@ class Parking{
     Map<String,Integer> countTimesParked;
     Map<String,Double> spotOccupation;
     public Parking(int capacity){
-    this.capacity=capacity;
-    parkedCars = new HashMap<>();
-    parkingRecords = new ArrayList<>();
-    countTimesParked = new TreeMap<>();
-    spotOccupation = new TreeMap<>();
+        this.capacity = capacity;
+        parkedCars = new HashMap<>();
+        parkingRecords = new ArrayList<>();
+        countTimesParked = new TreeMap<>();
+        spotOccupation = new TreeMap<>();
     }
-    public void update (String registration, String spot, LocalDateTime timestamp, boolean entry){
+    public void update(String registration, String spot, LocalDateTime timestamp, boolean entry){
         if(entry){
-            parkedCars.put(registration,new Car(registration,spot,timestamp));
+            parkedCars.put(registration, new Car(registration,spot,timestamp));
             countTimesParked.put(registration, countTimesParked.getOrDefault(registration,0)+1);
         }else{
             Car exitingCar = parkedCars.remove(registration);
-            ParkingRecord record = new ParkingRecord(registration, spot,exitingCar.getTimestamp(),timestamp);
+            if(exitingCar == null){
+                return;
+            }
+            ParkingRecord record = new ParkingRecord(registration,spot,exitingCar.getTimestamp(),timestamp);
             parkingRecords.add(record);
-            spotOccupation.put(spot, spotOccupation.getOrDefault(spot,0.0+ record.getDuration()));
+            spotOccupation.put(spot, spotOccupation.getOrDefault(spot, 0.0) + record.getDuration());
         }
+    }
+    public double occupacyPercentage(){
+        return ((double)parkedCars.size()/capacity)*100.0;
     }
     public void currentState(){
         System.out.printf("Capacity filled: %.2f%%\n",occupacyPercentage());
@@ -109,7 +117,6 @@ class Parking{
                 .sorted(Comparator.comparing(Car::getTimestamp).reversed())
                 .forEach(System.out::println);
     }
-
     public void history(){
         parkingRecords.stream()
                 .sorted(Comparator.comparing(ParkingRecord::getDuration).reversed())
@@ -118,28 +125,19 @@ class Parking{
     public Map<String, Integer> carStatistics(){
         return countTimesParked;
     }
-    public Map<String,Double> spotOccupancy (LocalDateTime start, LocalDateTime end){
-       long durationToCount = DateUtil.durationBetween(start,end);
+    Map<String,Double> spotOccupancy (LocalDateTime start, LocalDateTime end){
+        long durationToCount = DateUtil.durationBetween(start,end);
 
-        return spotOccupation.entrySet().stream()
+        return spotOccupation.entrySet()
+                .stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry->(entry.getValue()/durationToCount)*100.0,
-                        (existing, replacement) -> replacement,
-                        TreeMap::new// Keep the existing value in case of duplicate keys
-
+                        (e, x) -> e,
+                        TreeMap::new
                 ));
     }
-    public double occupacyPercentage(){
-        return ((double)parkedCars.size()/capacity)*100.0;
-    }
 }
-class DateUtil {
-    public static long durationBetween(LocalDateTime start, LocalDateTime end) {
-        return Duration.between(start, end).toMinutes();
-    }
-}
-
 public class ParkingTesting {
 
     public static <K, V extends Comparable<V>> void printMapSortedByValue(Map<K, V> map) {
